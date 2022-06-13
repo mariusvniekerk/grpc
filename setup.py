@@ -166,6 +166,8 @@ BUILD_WITH_SYSTEM_RE2 = _env_bool_value('GRPC_PYTHON_BUILD_SYSTEM_RE2', 'False')
 BUILD_WITH_STATIC_LIBSTDCXX = _env_bool_value(
     'GRPC_PYTHON_BUILD_WITH_STATIC_LIBSTDCXX', 'False')
 
+BUILD_WITH_SYSTEM_GRPC_CORE = _env_bool_value('GRPC_PYTHON_BUILD_SYSTEM_GRPC_CORE', 'False')
+
 # For local development use only: This skips building gRPC Core and its
 # dependencies, including protobuf and boringssl. This allows "incremental"
 # compilation by first building gRPC Core using make, then building only the
@@ -348,6 +350,9 @@ if BUILD_WITH_SYSTEM_CARES:
     EXTENSION_LIBRARIES += ('cares',)
 if BUILD_WITH_SYSTEM_RE2:
     EXTENSION_LIBRARIES += ('re2',)
+if BUILD_WITH_SYSTEM_GRPC_CORE:
+    EXTENSION_LIBRARIES += ('gpr', 'grpc', )
+
 
 DEFINE_MACROS = (('_WIN32_WINNT', 0x600),)
 asm_files = []
@@ -454,6 +459,9 @@ def cython_extensions_and_necessity():
             prefix + 'libgpr.a', prefix + 'libgrpc.a'
         ]
         core_c_files = []
+    elif BUILD_WITH_SYSTEM_GRPC_CORE:
+        core_c_files = []
+        extra_objects = []
     else:
         core_c_files = list(CORE_C_FILES)
         extra_objects = []
